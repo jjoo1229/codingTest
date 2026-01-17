@@ -1,15 +1,11 @@
 import java.util.*;
-import java.io.FileInputStream;
 
-class Solution
-{
-	public static void main(String args[]) throws Exception
-	{
+class Solution {
+	public static void main(String args[]) throws Exception {
 		Scanner sc = new Scanner(System.in);
 		int T = sc.nextInt();
 
-		for (int test_case = 1; test_case <= T; test_case++)
-		{
+		for (int test_case = 1; test_case <= T; test_case++) {
             int n = sc.nextInt();
             int m = sc.nextInt();
             int[] a = new int[n];
@@ -22,30 +18,26 @@ class Solution
             	b[i] = sc.nextInt();
             }
             
-            List<Integer> result = new ArrayList<>();
-            int idx = 0;
+            // 짧은 배열 / 긴 배열 정리
+            int[] shortArr, longArr;
+            
+            if (n <= m) {
+                shortArr = a;
+                longArr = b;
+            } else {
+                shortArr = b;
+                longArr = a;
+            }
+            
             int max = Integer.MIN_VALUE;
             
-            if (n < m) {
-                while (idx <= m - n) {
-                    int sum = 0;
+            for (int start = 0; start <=longArr.length - shortArr.length; start++) {
+                int sum = 0;
 
-                    for (int i = 0, j = idx; i < n; i++, j++) {
-                        sum += a[i] * b[j];
-                    }
-                    max = Math.max(max, sum);
-                    idx++;
+                for (int i = 0; i < shortArr.length; i++) {
+                    sum += shortArr[i] * longArr[start + i];
                 }
-            } else {
-            	while (idx <= n - m) {
-                    int sum = 0;
-
-                    for (int i = 0, j = idx; i < m; i++, j++) {
-                        sum += a[j] * b[i];
-                    }
-                    max = Math.max(max, sum);
-                    idx++;
-                }
+                max = Math.max(max, sum);
             }
             System.out.printf("#%d %d%n", test_case, max);
 		}
