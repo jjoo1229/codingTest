@@ -29,13 +29,6 @@ public class Main {
 				map[m[0]][m[1]] = 0; // 녹인다
 			}
 
-			// 2로 바꿔놨던 공기를 0으로 다시 변경
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < m; j++) {
-					if (map[i][j] == 2) map[i][j] = 0;
-				}
-			}
-
 			boolean noCheese = true;
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < m; j++) {
@@ -66,7 +59,7 @@ public class Main {
 				if (nx < 0 || nx >= n || ny < 0 || ny >= m)
 					continue;
 
-				if (!visited[nx][ny] && map[nx][ny] == 0) {
+				if (!visited[nx][ny] && map[nx][ny] != 1) {
 					visited[nx][ny] = true;
 					map[nx][ny] = 2;
 					q.add(new int[] { nx, ny });
