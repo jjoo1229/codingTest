@@ -1,57 +1,55 @@
 import java.util.*;
+import java.io.*;
 
 public class Solution {
-	public static int n;
+	public static int t, n, answer;
 	public static int[][] map;
-	public static int min;
+	public static boolean[] visited;
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int T = sc.nextInt();
-		for (int test_case = 1; test_case <= T; test_case++) {
-			n = sc.nextInt();
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		t = Integer.parseInt(br.readLine());
 
-			map = new int[n][n];
+		for (int tc = 1; tc <= t; tc++) {
+			n = Integer.parseInt(br.readLine());
+
+            map = new int[n][n];
 			for (int i = 0; i < n; i++) {
+				StringTokenizer st = new StringTokenizer(br.readLine());
 				for (int j = 0; j < n; j++) {
-					map[i][j] = sc.nextInt();
+					map[i][j] = Integer.parseInt(st.nextToken());
 				}
 			}
+			answer = Integer.MAX_VALUE;
+			visited = new boolean[n];
+			comb(0, n / 2, visited);
 
-			min = Integer.MAX_VALUE;
-
-			boolean[] visited = new boolean[n];
-			combination(visited, 0, n / 2);
-
-			System.out.printf("#%d %d%n", test_case, min);
+			System.out.printf("#%d %d%n", tc, answer);
 		}
 	}
 
-	public static void combination(boolean[] visited, int start, int r) {
-		int teamA = 0;
-		int teamB = 0;
-
+	public static void comb(int index, int r, boolean[] visited) {
 		if (r == 0) {
+			int a = 0, b = 0;
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < n; j++) {
 					if (i == j) continue;
 					
 					if (visited[i] && visited[j]) {
-						teamA += map[i][j] + map[j][i];
+						a += map[i][j];
 					} else if (!visited[i] && !visited[j]) {
-						teamB += map[i][j] + map[j][i];
+						b += map[i][j];
 					}
 				}
 			}
-			min = Math.min(min, Math.abs(teamA - teamB) / 2);
+			answer = Math.min(answer, Math.abs(a - b));
+			return;
 		}
 
-		for (int i = start; i < n; i++) {
-			if (!visited[i]) {
-				visited[i] = true;
-				combination(visited, i + 1, r - 1);
-				visited[i] = false;
-			}
+		for (int i = index; i < n; i++) {
+			visited[i] = true;
+			comb(i + 1, r - 1, visited);
+			visited[i] = false;
 		}
 	}
 }
