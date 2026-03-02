@@ -1,91 +1,75 @@
 import java.util.*;
- 
+import java.io.*;
+
 public class Solution {
-    public static int n ,m, c;
- 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int T = sc.nextInt();
- 
-        for (int test_case = 1; test_case <= T; test_case++) {
-            n = sc.nextInt();
-            m = sc.nextInt();
-            c = sc.nextInt();
-            int[][] map = new int[n][n];
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    map[i][j] = sc.nextInt();
-                }
-            }
-            // 꿀 채취
-            ArrayList<int[]> al = new ArrayList<>(); // 위치별 벌꿀 양 저장하는 리스트
- 
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j + m - 1 < n; j++) {
-                    Integer[] list = new Integer[m]; // 가로로 한번에 저장되는 벌통들
-                    for (int k = j; k <= j + m - 1; k++) { // map[i][j] ~ map[i][j + m - 1]까지 저장
-                        list[k - j] = map[i][k];
-                    }
-                    int honey = getHoney(list);
-                    al.add(new int[] { i, j, j + m - 1, honey }); // 행, 시작 열, 끝 열, 벌꿀 양
-                }
-            }
- 
-            Collections.sort(al, (a, b) -> b[3] - a[3]);
- 
-            System.out.printf("#%d %d%n", test_case, solve(al));
-        }
-    }
- 
-    // 각 벌통 내에서 채취할 수 있는 최대 꿀 구하기
-    public static int getHoney(Integer[] list) {
-        int limit = c;
-        int total = 0;
- 
-        // dp 사용해서 합이 i일 때 최대 제곱합 구하기
-        int[] dp = new int[limit + 1];
-        for (int i = 1; i <= limit; i++) dp[i] = -1;
-        dp[0] = 0;
- 
-        for (int l : list) {
-            for (int i = limit; i >= l; i--) {
-                if (dp[i - l] != -1) {
-                    dp[i] = Math.max(dp[i], dp[i - l] + l * l);
-                }
-            }
-        }
-        for (int d : dp)
-            total = Math.max(total, d);
- 
-        return total;
-    }
- 
-    public static boolean doNotMeet(int[] list1, int[] list2) {
-        int row1 = list1[0], startCol1 = list1[1], endCol1 = list1[2];
-        int row2 = list2[0], startCol2 = list2[1], endCol2 = list2[2];
-        if (row1 != row2)
-            return true;
-        for (int i = startCol1; i <= endCol1; i++) {
-            for (int j = startCol2; j <= endCol2; j++) {
-                if (i == j)
-                    return false;
-            }
-        }
-        return true;
-    }
- 
-    public static int solve(ArrayList<int[]> al) {
-        for (int i = 0; i < al.size(); i++) {
-            for (int j = i + 1; j < al.size(); j++) {
-                int[] a = al.get(i);
-                int[] b = al.get(j);
-                if (a.equals(b))
-                    continue;
-                if (doNotMeet(a, b)) {
-                    return a[3] + b[3];
-                }
-            }
-        }
-        return 0;
-    }
+	public static int t, n, m, c, answer, max;
+	public static int[][] map;
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		t = Integer.parseInt(br.readLine());
+
+		for (int tc = 1; tc <= t; tc++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			n = Integer.parseInt(st.nextToken());
+			m = Integer.parseInt(st.nextToken());
+			c = Integer.parseInt(st.nextToken());
+			
+			map = new int[n][n];
+			for (int i = 0; i < n; i++) {
+				StringTokenizer st2 = new StringTokenizer(br.readLine());
+				for (int j = 0; j < n; j++) {
+					map[i][j] = Integer.parseInt(st2.nextToken());
+				}
+			}
+
+			ArrayList<int[]> honeyList = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j <= n - m; j++) {
+					int[] honeyPots = new int[m];
+					int index = 0;
+					for (int k = j; k < j + m; k++) {
+						honeyPots[index++] = map[i][k];
+					}
+					max = 0;
+					dfs(honeyPots, 0, 0, 0);
+					honeyList.add(new int[] { max, i, j, j + m - 1 });
+				}
+			}
+			
+			solve(honeyList);
+			System.out.printf("#%d %d%n", tc, answer);
+		}
+	}
+
+	public static void solve(ArrayList<int[]> honeyList) {
+		answer = 0;
+		for (int i = 0; i < honeyList.size(); i++) {
+			for (int j = i+1; j < honeyList.size(); j++) {
+				if (isPossible(honeyList.get(i), honeyList.get(j))) {
+					answer = Math.max(answer, honeyList.get(i)[0] + honeyList.get(j)[0]);
+				}
+			}
+		}
+	}
+
+	public static void dfs(int[] arr, int index, int sum, int result) {
+		if (sum > c) return;
+
+		max = Math.max(max, result);
+
+		if (index == arr.length) return;
+
+		dfs(arr, index + 1, sum + arr[index], result+arr[index]*arr[index]);
+		dfs(arr, index + 1, sum, result);
+	}
+
+	public static boolean isPossible(int[] arr1, int[] arr2) {
+		// max, i, j, j + m-1
+		if (arr1[1] != arr2[1])
+			return true;
+		if (arr1[3] < arr2[2])
+			return true;
+		return false;
+	}
 }
