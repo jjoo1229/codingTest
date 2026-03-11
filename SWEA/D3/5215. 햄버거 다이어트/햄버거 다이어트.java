@@ -2,8 +2,8 @@ import java.util.*;
 import java.io.*;
 
 public class Solution {
-	public static int t, n, limit, max;
-	public static int[][] grid;
+	public static int t, n, limit;
+	public static int[][] ings;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -12,28 +12,23 @@ public class Solution {
 			StringTokenizer st = new StringTokenizer(br.readLine());
 			n = Integer.parseInt(st.nextToken());
 			limit = Integer.parseInt(st.nextToken());
-			grid = new int[n][2];
-
+			ings = new int[n][2];
 			for (int i = 0; i < n; i++) {
 				StringTokenizer st2 = new StringTokenizer(br.readLine());
-				grid[i][0] = Integer.parseInt(st2.nextToken());
-				grid[i][1] = Integer.parseInt(st2.nextToken());
+				ings[i][0] = Integer.parseInt(st2.nextToken());
+				ings[i][1] = Integer.parseInt(st2.nextToken());
 			}
-            max = 0;
-			dfs(0, limit, 0);
-			System.out.printf("#%d %d%n", tc, max);
-		}
-	}
 
-	public static void dfs(int index, int availableAmount, int point) {
-		if (index == n) {
-			max = Math.max(max, point);
-			return;
-		}
+			int[] dp = new int[limit + 1];
+			for (int i = 0; i < n; i++) {
+				int score = ings[i][0];
+				int cal = ings[i][1];
 
-		if (availableAmount - grid[index][1] >= 0) {
-			dfs(index + 1, availableAmount - grid[index][1], point + grid[index][0]);
+				for (int c = limit; c >= cal; c--) {
+					dp[c] = Math.max(dp[c], dp[c - cal] + score);
+				}
+			}
+			System.out.printf("#%d %d%n", tc, dp[limit]);
 		}
-		dfs(index + 1, availableAmount, point);
 	}
 }
